@@ -1,0 +1,6 @@
+with-expecter: true
+packages:
+  stori/accountsummary:
+    # place your package-specific config here
+    config:
+      all: True
