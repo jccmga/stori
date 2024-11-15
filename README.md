@@ -1,6 +1,12 @@
 # Stori - Challenge
 
+## About
+
+This project is a coding challenge for Stori with the following [description](./docs/challenge/coding-challenge.pdf).
+The rationale behind the decisions taken can be found in this [folder](./docs/architecture/README.md).
+
 ## Installation
+
 ### Locally
 To run locally, make sure to have [Golang v1.23.2+](https://golang.org/) installed.
 Also make sure to have some environment variables set:
