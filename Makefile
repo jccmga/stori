@@ -36,6 +36,6 @@ html-coverage:
 	go tool cover -html=coverage.out
 
 aws-lambda:
-	GOOS=linux GOARCH=amd64 go build -tags lambda.norpc -o bootstrap main.go && zip stori.zip bootstrap
+	GOOS=linux GOARCH=arm64 go build -tags lambda.norpc -o bootstrap main.go && zip stori.zip bootstrap
 
 .PHONY: build build-docker clean deps lint new-adr run-docker test test-coverage html-coverage
