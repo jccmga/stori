@@ -4,6 +4,7 @@ import (
 	"embed"
 	"flag"
 	"fmt"
+	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -46,8 +47,14 @@ func main() {
 		panic(err)
 	}
 
-	db := setupDB()
-	defer db.Close()
+	db, errSetup := setupDB()
+	if errSetup != nil {
+		log.Printf("DB not setup, persistence disabled: %s", errSetup.Error())
+	}
+
+	if db != nil {
+		defer db.Close()
+	}
 
 	repo := repository.New(db)
 
@@ -90,7 +97,7 @@ func buildEmailSender() (accountsummary.EmailSender, error) {
 	}), nil
 }
 
-func setupDB() *sqlx.DB {
+func setupDB() (*sqlx.DB, error) {
 	dbUser := os.Getenv("DB_USER")
 	dbPass := os.Getenv("DB_PASS")
 	dbName := os.Getenv("DB_NAME")
@@ -103,22 +110,26 @@ func setupDB() *sqlx.DB {
 
 	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	runMigrations(db)
+	if err = runMigrations(db); err != nil {
+		return nil, err
+	}
 
-	return db
+	return db, nil
 }
 
-func runMigrations(db *sqlx.DB) {
+func runMigrations(db *sqlx.DB) error {
 	goose.SetBaseFS(embedMigrations)
 
 	if err := goose.SetDialect("postgres"); err != nil {
-		panic(err)
+		return err
 	}
 
 	if err := goose.Up(db.DB, migrationsDir); err != nil {
-		panic(err)
+		return err
 	}
+
+	return nil
 }

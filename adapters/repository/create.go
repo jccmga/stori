@@ -12,6 +12,14 @@ import (
 )
 
 func (repo Repository) Create(execution accountsummary.Execution) error {
+	if repo.DB != nil {
+		return repo.create(execution)
+	}
+
+	return nil
+}
+
+func (repo Repository) create(execution accountsummary.Execution) error {
 	fail := func(err error) error {
 		return fmt.Errorf("repository: Repository: Create: %w", err)
 	}

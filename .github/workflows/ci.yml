@@ -1,0 +1,23 @@
+name: ci
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize, reopened]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Go 1.23.2
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23.2'
+          cache: true
+      - name: Lint
+        run: make lint
+      - name: Build
+        run: make build
+      - name: All tests
+        run: make test
