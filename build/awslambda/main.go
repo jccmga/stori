@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"os"
 	"strconv"
@@ -39,12 +40,12 @@ func handleRequest(_ context.Context, event *events.APIGatewayV2HTTPRequest) (*s
 
 	filePath, ok := body[filePathKey]
 	if !ok {
-		panic(fmt.Errorf("filepath not found"))
+		panic(errors.New("filepath not found"))
 	}
 
 	email, ok := body[emailKey]
 	if !ok {
-		panic(fmt.Errorf("email not found"))
+		panic(errors.New("email not found"))
 	}
 
 	emailSender, err := buildEmailSender()
