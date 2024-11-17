@@ -3,10 +3,12 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"os"
 	"strconv"
 	"strings"
 
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
 	"stori/accountsummary"
@@ -22,23 +24,27 @@ const (
 	EmailPort     = "EMAIL_PORT"
 	EmailUsername = "EMAIL_USERNAME"
 	EmailPassword = "EMAIL_PASSWORD"
+
+	filePathKey = "filepath"
+	emailKey    = "email"
 )
 
-type (
-	Event struct {
-		Body Body `json:"body"`
+func handleRequest(_ context.Context, event *events.APIGatewayV2HTTPRequest) error {
+	body := map[string]string{}
+
+	err := json.Unmarshal([]byte(event.Body), &body)
+	if err != nil {
+		panic(err)
 	}
 
-	Body struct {
-		FilePath string `json:"filepath"`
-		Email    string `json:"email"`
+	filePath, ok := body[filePathKey]
+	if !ok {
+		panic(fmt.Errorf("filepath not found"))
 	}
-)
 
-func handleRequest(_ context.Context, raw json.RawMessage) error {
-	var event Event
-	if err := json.Unmarshal(raw, &event); err != nil {
-		return err
+	email, ok := body[emailKey]
+	if !ok {
+		panic(fmt.Errorf("email not found"))
 	}
 
 	emailSender, err := buildEmailSender()
@@ -46,12 +52,12 @@ func handleRequest(_ context.Context, raw json.RawMessage) error {
 		panic(err)
 	}
 
-	reader := buildTransactionsReader(event.Body.FilePath)
+	reader := buildTransactionsReader(filePath)
 	noopRepo := repository.New(nil)
 
 	application := accountsummary.New(accountsummary.Config{
-		Email:              event.Body.Email,
-		FilePath:           event.Body.FilePath,
+		Email:              email,
+		FilePath:           filePath,
 		TransactionsReader: reader,
 		EmailSender:        emailSender,
 		Repository:         noopRepo,
