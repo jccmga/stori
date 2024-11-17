@@ -24,14 +24,20 @@ const (
 	EmailPassword = "EMAIL_PASSWORD"
 )
 
-type Params struct {
-	FilePath string `json:"filepath"`
-	Email    string `json:"email"`
-}
+type (
+	Event struct {
+		Body Body `json:body`
+	}
 
-func handleRequest(_ context.Context, event json.RawMessage) error {
-	var params Params
-	if err := json.Unmarshal(event, &params); err != nil {
+	Body struct {
+		FilePath string `json:"filepath"`
+		Email    string `json:"email"`
+	}
+)
+
+func handleRequest(_ context.Context, raw json.RawMessage) error {
+	var event Event
+	if err := json.Unmarshal(raw, &event); err != nil {
 		return err
 	}
 
@@ -40,12 +46,12 @@ func handleRequest(_ context.Context, event json.RawMessage) error {
 		panic(err)
 	}
 
-	reader := buildTransactionsReader(params.FilePath)
+	reader := buildTransactionsReader(event.Body.FilePath)
 	noopRepo := repository.New(nil)
 
 	application := accountsummary.New(accountsummary.Config{
-		Email:              params.Email,
-		FilePath:           params.FilePath,
+		Email:              event.Body.Email,
+		FilePath:           event.Body.FilePath,
 		TransactionsReader: reader,
 		EmailSender:        emailSender,
 		Repository:         noopRepo,

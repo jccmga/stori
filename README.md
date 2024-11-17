@@ -38,6 +38,15 @@ Then, run:
 ./run.sh
 ```
 
+### AWS Lambda
+The app is deployed on AWS Lambda after a merge in the main branch. The function is triggered by a HTTP request like:
+
+```
+curl 'https://jjgfocgzqs57f5mhxf6qhgcibe0uaenb.lambda-url.us-east-1.on.aws/' -H 'Content-type: application/json' -d '{"filepath": "s3://jcamilostori/several_transactions.csv", "email": "youremail@gmail.com"}'
+```
+
+Please note only S3 URI will work with AWS Lambda.
+
 ### Tests
 
 Distinction between unit tests and integration tests follow definition from Khorikov

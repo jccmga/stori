@@ -4,7 +4,6 @@ import (
 	"embed"
 	"flag"
 	"fmt"
-	"log"
 	"os"
 	"strconv"
 	"strings"
@@ -47,14 +46,8 @@ func main() {
 		panic(err)
 	}
 
-	db, errSetup := setupDB()
-	if errSetup != nil {
-		log.Printf("DB not setup, persistence disabled: %s", errSetup.Error())
-	}
-
-	if db != nil {
-		defer db.Close()
-	}
+	db := setupDB()
+	defer db.Close()
 
 	repo := repository.New(db)
 
@@ -97,7 +90,7 @@ func buildEmailSender() (accountsummary.EmailSender, error) {
 	}), nil
 }
 
-func setupDB() (*sqlx.DB, error) {
+func setupDB() *sqlx.DB {
 	dbUser := os.Getenv("DB_USER")
 	dbPass := os.Getenv("DB_PASS")
 	dbName := os.Getenv("DB_NAME")
@@ -110,14 +103,14 @@ func setupDB() (*sqlx.DB, error) {
 
 	db, err := sqlx.Connect("postgres", dsn)
 	if err != nil {
-		return nil, err
+		return nil
 	}
 
 	if err = runMigrations(db); err != nil {
-		return nil, err
+		return nil
 	}
 
-	return db, nil
+	return db
 }
 
 func runMigrations(db *sqlx.DB) error {
