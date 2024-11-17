@@ -29,7 +29,7 @@ const (
 	emailKey    = "email"
 )
 
-func handleRequest(_ context.Context, event *events.APIGatewayV2HTTPRequest) error {
+func handleRequest(_ context.Context, event *events.APIGatewayV2HTTPRequest) (*string, error) {
 	body := map[string]string{}
 
 	err := json.Unmarshal([]byte(event.Body), &body)
@@ -66,7 +66,10 @@ func handleRequest(_ context.Context, event *events.APIGatewayV2HTTPRequest) err
 	if errRun := application.Run(); errRun != nil {
 		panic(errRun)
 	}
-	return nil
+
+	successMessage := fmt.Sprintf("Process executed successfully for email: %s and file: %s", email, filePath)
+
+	return &successMessage, nil
 }
 
 func buildTransactionsReader(filepath string) accountsummary.TransactionsReader {
