@@ -26,7 +26,7 @@ const (
 
 type (
 	Event struct {
-		Body Body `json:body`
+		Body Body `json:"body""`
 	}
 
 	Body struct {
