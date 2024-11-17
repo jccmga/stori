@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -35,7 +36,7 @@ func (reader S3) ReadTransactions() ([]model.Transaction, error) {
 		return fail(fmt.Errorf("%w: %w", ErrInvalidURI, err))
 	}
 
-	destPath := os.TempDir() + key
+	destPath := filepath.Join(os.TempDir(), key)
 	if errDownload := downloadFileFromS3(bucket, key, destPath); errDownload != nil {
 		return fail(errDownload)
 	}
