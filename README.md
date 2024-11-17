@@ -35,7 +35,7 @@ Also make sure to have your `./build/.env` file set with proper values.
 Then, run:
 
 ```
-./run.sh
+./run.sh s3://jcamilostori/several_transactions.csv jcamilo.36@gmail.com
 ```
 
 ### AWS Lambda
@@ -102,3 +102,10 @@ go get github.com/jmoiron/sqlx
 ```
 
 go get github.com/aws/aws-lambda-go/lambda
+
+## Next steps
+
+For time constraints, I didn't have time to implement the following:
+- Fix integration test for email sender using docker test. I had some issues with the server.
+- Fan-in fan-out approach to process the transactions and merging aggregates.
+- Add end-to-end tests.
